@@ -70,7 +70,25 @@ pipeline {
 
             }
         }
-        stage('Deploy') {
+        stage('Deploy staging') {
+            agent{
+                docker{
+                    image 'node:18-alpine'
+                    reuseNode true
+                }
+            }
+            steps {
+                echo 'Deploy project...'
+                sh '''
+                    npm install netlify-cli
+                    node_modules/.bin/netlify --version
+                    echo "Deploying to staging. Site ID: $NETLIFY_SITE_ID"
+                    node_modules/.bin/netlify status
+                    node_modules/.bin/netlify deploy --dir=build --no-build
+                '''
+            }
+        }
+        stage('Deploy prod') {
             agent{
                 docker{
                     image 'node:18-alpine'
@@ -88,26 +106,26 @@ pipeline {
                 '''
             }
         }
-        stage('Prod E2E'){
-            agent {
-                docker{
-                    image 'mcr.microsoft.com/playwright:v1.39.0-jammy'
-                    reuseNode true
-                }
-            }
-            environment{
-                CI_ENVIRONMENT_URL = 'https://admirable-eclair-291e05.netlify.app'
-            }
-            steps{
-                sh '''
-                    npx playwright test --reporter=html
-                '''
-            }
-            post {
-                always{
-                    publishHTML([allowMissing: false, alwaysLinkToLastBuild: false, icon: '', keepAll: false, reportDir: 'playwright-report', reportFiles: 'index.html', reportName: 'Playwright E2E', reportTitles: '', useWrapperFileDirectly: true])
-                }
-            }
-        }
+        // stage('Prod E2E'){
+        //     agent {
+        //         docker{
+        //             image 'mcr.microsoft.com/playwright:v1.39.0-jammy'
+        //             reuseNode true
+        //         }
+        //     }
+        //     environment{
+        //         CI_ENVIRONMENT_URL = 'https://admirable-eclair-291e05.netlify.app'
+        //     }
+        //     steps{
+        //         sh '''
+        //             npx playwright test --reporter=html
+        //         '''
+        //     }
+        //     post {
+        //         always{
+        //             publishHTML([allowMissing: false, alwaysLinkToLastBuild: false, icon: '', keepAll: false, reportDir: 'playwright-report', reportFiles: 'index.html', reportName: 'Playwright E2E', reportTitles: '', useWrapperFileDirectly: true])
+        //         }
+        //     }
+        // }
     }
 }
