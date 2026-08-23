@@ -17,7 +17,7 @@ pipeline {
         stage('Build') {
             agent{
                 docker{
-                    image 'node:18-alpine'
+                    image 'learn-jenkins-app'
                     reuseNode true
                 }
             }
@@ -82,20 +82,18 @@ pipeline {
         stage('Deploy staging') {
             agent{
                 docker{
-                    image 'node:18-alpine'
+                    image 'learn-jenkins-app'
                     reuseNode true
                 }
             }
             steps {
                 echo 'Deploy project...'
                 sh '''
-                    npm install netlify-cli 
-                    npm install node-jq --save 
-                    node_modules/.bin/netlify --version
+                    netlify --version
                     echo "Deploying to staging. Site ID: $NETLIFY_SITE_ID"
-                    node_modules/.bin/netlify status
-                    node_modules/.bin/netlify deploy --dir=build --no-build --json > deploy-output.json
-                    node_modules/.bin/node-jq -r '.deploy_url' deploy-output.json
+                    netlify status
+                    netlify deploy --dir=build --no-build --json > deploy-output.json
+                    node-jq -r '.deploy_url' deploy-output.json
                 '''
             script {
                 env.STAGING_URL = sh(script: "node_modules/.bin/node-jq -r '.deploy_url' deploy-output.json", returnStdout: true).trim()
@@ -133,18 +131,17 @@ pipeline {
         stage('Deploy prod') {
             agent{
                 docker{
-                    image 'node:18-alpine'
+                    image 'learn-jenkins-app'
                     reuseNode true
                 }
             }
             steps {
                 echo 'Deploy project...'
                 sh '''
-                    npm install netlify-cli
-                    node_modules/.bin/netlify --version
+                    netlify --version
                     echo "Deploying to production. Site ID: $NETLIFY_SITE_ID"
-                    node_modules/.bin/netlify status
-                    node_modules/.bin/netlify deploy --dir=build --prod --no-build
+                    netlify status
+                    netlify deploy --dir=build --prod --no-build
                 '''
             }
         }
