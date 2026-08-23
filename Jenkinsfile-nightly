@@ -1,0 +1,14 @@
+pipeline {
+    agent any
+    stages {
+        stage('Docker Build') {
+            steps {
+                echo 'Building docker image...'
+                sh '''
+                    docker build -t learn-jenkins-app .
+                '''
+            }
+        }
+       
+    }
+}

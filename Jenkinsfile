@@ -6,14 +6,6 @@ pipeline {
         REACT_APP_VERSION = "1.0.${BUILD_ID}"
     }
     stages {
-        stage('Docker Build') {
-            steps {
-                echo 'Building docker image...'
-                sh '''
-                    docker build -t learn-jenkins-app .
-                '''
-            }
-        }
         stage('Build') {
             agent{
                 docker{
@@ -96,7 +88,7 @@ pipeline {
                     node-jq -r '.deploy_url' deploy-output.json
                 '''
             script {
-                env.STAGING_URL = sh(script: "node_modules/.bin/node-jq -r '.deploy_url' deploy-output.json", returnStdout: true).trim()
+                env.STAGING_URL = sh(script: "node-jq -r '.deploy_url' deploy-output.json", returnStdout: true).trim()
             }
             }
         }
