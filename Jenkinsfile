@@ -85,10 +85,10 @@ pipeline {
                     echo "Deploying to staging. Site ID: $NETLIFY_SITE_ID"
                     netlify status
                     netlify deploy --dir=build --no-build --json > deploy-output.json
-                    node-jq -r '.deploy_url' deploy-output.json
+                    jq -r '.deploy_url' deploy-output.json
                 '''
             script {
-                env.STAGING_URL = sh(script: "node-jq -r '.deploy_url' deploy-output.json", returnStdout: true).trim()
+                env.STAGING_URL = sh(script: "jq -r '.deploy_url' deploy-output.json", returnStdout: true).trim()
             }
             }
         }
