@@ -4,10 +4,6 @@ pipeline {
         NETLIFY_SITE_ID = '8f657ebb-5255-4aae-b314-f2eedd9a7e4a'
         NETLIFY_AUTH_TOKEN = credentials('netlify-token')
         REACT_APP_VERSION = "1.0.${BUILD_ID}"
-        // AWS 
-        AWS_DEFAULT_REGION = 'us-east-1'
-        AWS_ACCESS_KEY_ID = credentials('aws-access-key-id')
-        AWS_SECRET_ACCESS_KEY = credentials('aws-secret-access-key')
     }
     stages {
         stage('AWS'){
