@@ -6,6 +6,14 @@ pipeline {
         REACT_APP_VERSION = "1.0.${BUILD_ID}"
     }
     stages {
+        stage('Docker Build') {
+            steps {
+                echo 'Building docker image...'
+                sh '''
+                    docker build -t learn-jenkins-app .
+                '''
+            }
+        }
         stage('AWS'){
             agent{
                 docker{
